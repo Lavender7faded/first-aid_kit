@@ -28,7 +28,7 @@ def get_medicines():
 # 📌 2. Отримати конкретний лікарський засіб за ID
 @app.route('/medicines/<int:medicine_id>', methods=['GET'])
 def get_medicine(medicine_id):
-    medicine = Medicine.query.get(medicine_id)
+    medicine = db.session.get(Medicine, medicine_id)
     if medicine is None:
         return Response(
             response=json.dumps({"error": "Ліки не знайдено"}, ensure_ascii=False),
@@ -68,7 +68,7 @@ def add_medicine():
 # 📌 4. Оновити лікарський засіб
 @app.route('/medicines/<int:medicine_id>', methods=['PUT'])
 def update_medicine(medicine_id):
-    medicine = Medicine.query.get(medicine_id)
+    medicine = db.session.get(Medicine, medicine_id)
     if medicine is None:
         return jsonify({"error": "Ліки не знайдено"}), 404
 
@@ -93,7 +93,7 @@ def update_medicine(medicine_id):
 # 📌 5. Видалити лікарський засіб
 @app.route('/medicines/<int:medicine_id>', methods=['DELETE'])
 def delete_medicine(medicine_id):
-    medicine = Medicine.query.get(medicine_id)
+    medicine = db.session.get(Medicine, medicine_id)
     if medicine is None:
         return jsonify({"error": "Ліки не знайдено"}), 404
 

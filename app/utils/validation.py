@@ -23,7 +23,9 @@ def validate_medicine_data(data, for_update=False):
     if quantity is not None:
         try:
             q = int(quantity)
-            if q < 0:
+            if q == 0:
+                errors.append("Кількість не може бути нульовою")
+            elif q < 0:
                 errors.append("Кількість не може бути від’ємною")
         except ValueError:
             errors.append("Кількість має бути числом")
