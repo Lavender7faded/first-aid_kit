@@ -1,15 +1,19 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+import pymysql
 
-app = Flask(__name__)
-app.config['JSON_AS_ASCII'] = False
+pymysql.install_as_MySQLdb()
 
-# Підключення до MySQL
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:h5s%4L%PeYXC@localhost/pharmacy_db'
+app = Flask(__name__, template_folder='../templates')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:h5s%4L%PeYXC@localhost/pharmacy_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
-from app import routes, models  # Імпортуємо маршрути та моделі
+def register_routes():
+    from app import routes
+
+register_routes()

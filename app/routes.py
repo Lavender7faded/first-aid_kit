@@ -4,9 +4,14 @@ from app.models import Medicine
 from datetime import datetime
 from app.utils.validation import validate_medicine_data
 
-import traceback
 from flask import Response
 import json
+from flask import render_template
+
+@app.route('/ui/medicines')
+def list_medicines_ui():
+    medicines = Medicine.query.all()
+    return render_template('list_medicines.html', medicines=medicines)
 
 # 📌 1. Отримати всі ліки
 @app.route('/medicines', methods=['GET'])
