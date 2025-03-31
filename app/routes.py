@@ -6,12 +6,33 @@ from app.utils.validation import validate_medicine_data
 
 from flask import Response
 import json
-from flask import render_template
+from flask import render_template, request, redirect, url_for
 
 @app.route('/ui/medicines')
 def list_medicines_ui():
     medicines = Medicine.query.all()
     return render_template('list_medicines.html', medicines=medicines)
+
+@app.route('/ui/add', methods=['GET', 'POST'])
+def add_medicine_ui():
+    if request.method == 'POST':
+        name = request.form.get('name')
+        quantity = request.form.get('quantity')
+        expiration_date = request.form.get('expiration_date')
+        description = request.form.get('description')
+
+        new_med = Medicine(
+            name=name,
+            quantity=int(quantity),
+            expiration_date=datetime.strptime(expiration_date, '%Y-%m-%d'),
+            description=description
+        )
+        db.session.add(new_med)
+        db.session.commit()
+
+        return redirect(url_for('list_medicines_ui'))
+
+    return render_template('add_medicine.html')
 
 # 📌 1. Отримати всі ліки
 @app.route('/medicines', methods=['GET'])
