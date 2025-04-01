@@ -8,7 +8,20 @@
 <body class="bg-light">
   <div class="container mt-4">
     <h1 class="mb-4 text-center">💊 Домашня Аптечка</h1>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <div class="container mt-3">
+          {% for message in messages %}
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+          {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
     {% block content %}{% endblock %}
   </div>
+  {% block scripts %}{% endblock %}
 </body>
 </html>
