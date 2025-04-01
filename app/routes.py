@@ -7,6 +7,7 @@ from app.utils.validation import validate_medicine_data
 from flask import Response
 import json
 from flask import render_template, request, redirect, url_for
+from flask import flash
 
 @app.route('/ui/medicines')
 def list_medicines_ui():
@@ -16,20 +17,26 @@ def list_medicines_ui():
 @app.route('/ui/add', methods=['GET', 'POST'])
 def add_medicine_ui():
     if request.method == 'POST':
-        name = request.form.get('name')
-        quantity = request.form.get('quantity')
-        expiration_date = request.form.get('expiration_date')
-        description = request.form.get('description')
+        name = request.form['name']
+        expiration_date = request.form['expiration_date']
+        quantity = request.form['quantity']
+        description = request.form.get('description', '')
+
+        try:
+            exp_date = datetime.strptime(expiration_date, '%Y-%m-%d')
+        except ValueError:
+            flash("Невірний формат дати", "danger")
+            return render_template('add_medicine.html')
 
         new_med = Medicine(
             name=name,
+            expiration_date=exp_date,
             quantity=int(quantity),
-            expiration_date=datetime.strptime(expiration_date, '%Y-%m-%d'),
             description=description
         )
         db.session.add(new_med)
         db.session.commit()
-
+        flash('✅ Ліки успішно додано!')
         return redirect(url_for('list_medicines_ui'))
 
     return render_template('add_medicine.html')
