@@ -4,20 +4,23 @@
 {% block content %}
 <div class="container mt-4">
   <h2 class="mb-4">Додати нові ліки</h2>
-  <form method="POST" action="/ui/add">
+  <form method="POST" action="/ui/add" novalidate>
     <div class="mb-3">
       <label for="name" class="form-label">Назва:</label>
       <input type="text" class="form-control" id="name" name="name" required>
+      <div class="text-danger mt-1" id="error-name"></div>
     </div>
 
     <div class="mb-3">
       <label for="quantity" class="form-label">Кількість:</label>
       <input type="number" class="form-control" id="quantity" name="quantity" required>
+      <div class="text-danger mt-1" id="error-quantity"></div>
     </div>
 
     <div class="mb-3">
       <label for="expiration_date" class="form-label">Термін придатності:</label>
       <input type="date" class="form-control" id="expiration_date" name="expiration_date" required>
+      <div class="text-danger mt-1" id="error-date"></div>
     </div>
 
     <div class="mb-3">
@@ -28,4 +31,97 @@
     <button type="submit" class="btn btn-primary">Додати</button>
   </form>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelector('form').addEventListener('submit', function (e) {
+    const nameInput = document.querySelector('#name');
+    const quantityInput = document.querySelector('#quantity');
+    const dateInput = document.querySelector('#expiration_date');
+
+    const name = nameInput.value.trim();
+    const quantityStr = quantityInput.value.trim();
+    const date = dateInput.value.trim();
+
+    let errors = {
+      name: '',
+      quantity: '',
+      date: ''
+    };
+
+    // Очистка класів і помилок
+    [nameInput, quantityInput, dateInput].forEach(el => {
+      el.classList.remove('is-invalid', 'is-valid');
+    });
+    document.getElementById('error-name').textContent = '';
+    document.getElementById('error-quantity').textContent = '';
+    document.getElementById('error-date').textContent = '';
+
+    // Перевірка назви
+    if (!name) {
+      errors.name = "Поле 'Назва' обов’язкове";
+    } else if (!isNaN(name)) {
+      errors.name = "Назва не може бути числом";
+    }
+
+    // Перевірка кількості
+    const quantity = parseInt(quantityStr);
+    if (!quantityStr) {
+      errors.quantity = "Поле 'Кількість' обов’язкове";
+    } else if (isNaN(quantity) || quantity <= 0) {
+      errors.quantity = "Кількість має бути числом більше 0";
+    }
+
+    // Перевірка дати
+    if (!date) {
+      errors.date = "Поле 'Термін придатності' обов’язкове";
+    } else {
+      const selectedDate = dateInput.valueAsDate;
+      if (!selectedDate) {
+        errors.date = "Невірний формат дати";
+      } else {
+        const year = selectedDate.getFullYear();
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        if (year < 1000) {
+          errors.date = "Рік має бути не менше 1000";
+        } else if (selectedDate < today) {
+          errors.date = "Термін придатності не може бути у минулому";
+        }
+      }
+    }
+
+    // Вивід помилок або підсвітка зеленим
+    if (errors.name) {
+      nameInput.classList.add('is-invalid');
+      document.getElementById('error-name').textContent = errors.name;
+    } else {
+      nameInput.classList.add('is-valid');
+    }
+
+    if (errors.quantity) {
+      quantityInput.classList.add('is-invalid');
+      document.getElementById('error-quantity').textContent = errors.quantity;
+    } else {
+      quantityInput.classList.add('is-valid');
+    }
+
+    if (errors.date) {
+      dateInput.classList.add('is-invalid');
+      document.getElementById('error-date').textContent = errors.date;
+    } else {
+      dateInput.classList.add('is-valid');
+    }
+
+    if (errors.name || errors.quantity || errors.date) {
+      const firstErrorField = document.querySelector('.is-invalid');
+      if (firstErrorField) {
+        firstErrorField.focus();
+      }
+      e.preventDefault();
+    }
+  });
+</script>
 {% endblock %}
