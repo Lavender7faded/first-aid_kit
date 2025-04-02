@@ -1,13 +1,10 @@
-from flask import request, jsonify
+from flask import flash, render_template, request, redirect, url_for, Response, jsonify
 from app import app, db
 from app.models import Medicine
 from datetime import datetime
 from app.utils.validation import validate_medicine_data
-
-from flask import Response
 import json
-from flask import render_template, request, redirect, url_for
-from flask import flash
+
 
 @app.route('/ui/medicines')
 def list_medicines_ui():
@@ -40,6 +37,33 @@ def add_medicine_ui():
         return redirect(url_for('list_medicines_ui'))
 
     return render_template('add_medicine.html')
+
+@app.route('/ui/edit/<int:medicine_id>', methods=['GET', 'POST'])
+def edit_medicine_ui(medicine_id):
+    medicine = Medicine.query.get_or_404(medicine_id)
+
+    if request.method == 'POST':
+        name = request.form['name']
+        expiration_date = request.form['expiration_date']
+        quantity = request.form['quantity']
+        description = request.form.get('description', '')
+
+        try:
+            exp_date = datetime.strptime(expiration_date, '%Y-%m-%d')
+        except ValueError:
+            flash('❌ Невірний формат дати', 'danger')
+            return redirect(f'/ui/edit/{medicine_id}')
+
+        medicine.name = name
+        medicine.expiration_date = exp_date
+        medicine.quantity = int(quantity)
+        medicine.description = description
+
+        db.session.commit()
+        flash('✅ Ліки успішно оновлено!', 'success')
+        return redirect('/ui/medicines')
+
+    return render_template('edit_medicine.html', medicine=medicine)
 
 # 📌 1. Отримати всі ліки
 @app.route('/medicines', methods=['GET'])
