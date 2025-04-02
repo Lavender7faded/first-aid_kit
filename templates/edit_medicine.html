@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Редагувати ліки{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">Редагувати ліки</h2>
+  <form method="POST" action="">
+    <div class="mb-3">
+      <label for="name" class="form-label">Назва:</label>
+      <input type="text" class="form-control" id="name" name="name" value="{{ medicine.name }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="quantity" class="form-label">Кількість:</label>
+      <input type="number" class="form-control" id="quantity" name="quantity" value="{{ medicine.quantity }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="expiration_date" class="form-label">Термін придатності:</label>
+      <input type="date" class="form-control" id="expiration_date" name="expiration_date" value="{{ medicine.expiration_date.strftime('%Y-%m-%d') }}" required>
+    </div>
+
+    <div class="mb-3">
+      <label for="description" class="form-label">Опис:</label>
+      <textarea class="form-control" id="description" name="description">{{ medicine.description }}</textarea>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Зберегти зміни</button>
+    <a href="/ui/medicines" class="btn btn-secondary">Скасувати</a>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  document.querySelector('form').addEventListener('submit', function (e) {
+    const name = document.querySelector('input[name="name"]').value.trim();
+    const quantityStr = document.querySelector('input[name="quantity"]').value.trim();
+    const date = document.querySelector('input[name="expiration_date"]').value.trim();
+
+    let errors = [];
+
+    if (!name) {
+      errors.push("Поле 'Назва' обов’язкове");
+    } else if (!isNaN(name)) {
+      errors.push("Назва не може бути числом");
+    }
+
+    const quantity = parseInt(quantityStr);
+    if (!quantityStr) {
+      errors.push("Поле 'Кількість' обов’язкове");
+    } else if (isNaN(quantity) || quantity <= 0) {
+      errors.push("Кількість має бути числом більше 0");
+    }
+
+    if (!date) {
+      errors.push("Поле 'Термін придатності' обов’язкове");
+    } else {
+      const selectedDate = document.querySelector('input[name="expiration_date"]').valueAsDate;
+      if (!selectedDate || selectedDate.getFullYear() < 1000) {
+        errors.push("Невірний формат дати");
+      } else {
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        if (selectedDate < today) {
+          errors.push("Термін придатності не може бути у минулому");
+        }
+      }
+    }
+
+    if (errors.length > 0) {
+      e.preventDefault();
+      alert(errors.join('\n'));
+    }
+  });
+</script>
+{% endblock %}
