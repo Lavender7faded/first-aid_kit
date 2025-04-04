@@ -65,6 +65,14 @@ def edit_medicine_ui(medicine_id):
 
     return render_template('edit_medicine.html', medicine=medicine)
 
+@app.route('/ui/delete/<int:medicine_id>', methods=['POST'])
+def delete_medicine_ui(medicine_id):
+    medicine = Medicine.query.get_or_404(medicine_id)
+    db.session.delete(medicine)
+    db.session.commit()
+    flash('❌ Ліки успішно видалено!')
+    return redirect('/ui/medicines')
+
 # 📌 1. Отримати всі ліки
 @app.route('/medicines', methods=['GET'])
 def get_medicines():
