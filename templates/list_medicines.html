@@ -6,7 +6,7 @@
   <h2 class="mb-4">Список ліків</h2>
 
   <div class="mb-3">
-    <a href="/ui/add" class="btn btn-success">➕ Додати ліки</a>
+    <a href="/ui/add" class="btn btn-dark">➕ Додати ліки</a>
   </div>
 
   {% if medicines %}
@@ -28,7 +28,7 @@
         <td>{{ med.expiration_date.strftime('%Y-%m-%d') }}</td>
         <td>{{ med.description or '-' }}</td>
         <td>
-          <a href="/ui/edit/{{ med.id }}" class="btn btn-sm btn-primary">Редагувати</a>
+          <a href="/ui/edit/{{ med.id }}" class="btn btn-sm btn-dark">Редагувати</a>
         </td>
       </tr>
       {% endfor %}
