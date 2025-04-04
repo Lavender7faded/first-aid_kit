@@ -27,8 +27,11 @@
         <td>{{ med.quantity }}</td>
         <td>{{ med.expiration_date.strftime('%Y-%m-%d') }}</td>
         <td>{{ med.description or '-' }}</td>
-        <td>
-          <a href="/ui/edit/{{ med.id }}" class="btn btn-sm btn-dark">Редагувати</a>
+        <td class="d-flex gap-2">
+            <a href="/ui/edit/{{ med.id }}" class="btn btn-dark btn-sm">Редагувати</a>
+            <form method="POST" action="/ui/delete/{{ med.id }}" onsubmit="return confirm('Ви впевнені, що хочете видалити ці ліки?');">
+              <button type="submit" class="btn btn-danger btn-sm">Видалити</button>
+            </form>
         </td>
       </tr>
       {% endfor %}
