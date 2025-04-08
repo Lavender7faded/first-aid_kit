@@ -73,6 +73,22 @@ def delete_medicine_ui(medicine_id):
     flash('❌ Ліки успішно видалено!')
     return redirect('/ui/medicines')
 
+@app.route('/ui/alerts')
+def alerts_ui():
+    expiring_soon = Medicine.query.filter(
+        Medicine.expiration_date <= datetime.today() + timedelta(days=7)
+    ).all()
+
+    low_quantity = Medicine.query.filter(
+        Medicine.quantity <= 3
+    ).all()
+
+    return render_template(
+        'alerts.html',
+        expiring_soon=expiring_soon,
+        low_quantity=low_quantity
+    )
+
 # 📌 1. Отримати всі ліки
 @app.route('/medicines', methods=['GET'])
 def get_medicines():
