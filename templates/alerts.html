@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Нагадування{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h2 class="mb-4">🔔 Нагадування</h2>
+
+  {% if expiring_soon %}
+    <div class="alert alert-warning">
+      <h5>🟡 Ліки, у яких скоро закінчується термін придатності:</h5>
+      <ul>
+        {% for med in expiring_soon %}
+          <li><strong>{{ med.name }}</strong> (до {{ med.expiration_date }})</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if low_quantity %}
+    <div class="alert alert-danger">
+      <h5>🔴 Ліки з низькою кількістю:</h5>
+      <ul>
+        {% for med in low_quantity %}
+          <li><strong>{{ med.name }}</strong> — залишилось {{ med.quantity }} шт.</li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  {% if not expiring_soon and not low_quantity %}
+    <div class="alert alert-success">
+      Усі ліки в нормі 💊
+    </div>
+  {% endif %}
+</div>
+{% endblock %}
