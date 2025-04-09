@@ -3,7 +3,7 @@ import time
 from datetime import datetime, timedelta
 
 from app.routes import app
-from app.models import Medicine
+from app.models import Medicine, Alert
 from app import db
 
 def check_alerts():
@@ -20,14 +20,21 @@ def check_alerts():
             Medicine.quantity <= 3
         ).all()
 
-        if expiring or low_quantity:
-            print("⚠️ Alerts detected:")
-            for m in expiring:
-                print(f"  • {m.name} expires on {m.expiration_date}")
-            for m in low_quantity:
-                print(f"  • {m.name} has only {m.quantity} left")
-        else:
+        for m in expiring:
+            message = f"{m.name} expires on {m.expiration_date}"
+            print(f"⚠️ {message}")
+            db.session.add(Alert(message=message))
+
+        for m in low_quantity:
+            message = f"{m.name} has only {m.quantity} left"
+            print(f"⚠️ {message}")
+            db.session.add(Alert(message=message))
+
+        db.session.commit()
+
+        if not expiring and not low_quantity:
             print("✅ All medicines are OK.")
+
 
 # Run daily at 09:00
 schedule.every().day.at("09:00").do(check_alerts)
