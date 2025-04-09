@@ -1,5 +1,5 @@
 from app import db
-from datetime import datetime
+from datetime import datetime, timezone
 
 class Medicine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -14,4 +14,4 @@ class Medicine(db.Model):
 class Alert(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     message = db.Column(db.String(255), nullable=False)
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    timestamp = db.Column(db.DateTime(timezone=True), default=datetime.now(timezone.utc))
