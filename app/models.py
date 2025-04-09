@@ -1,4 +1,5 @@
 from app import db
+from datetime import datetime
 
 class Medicine(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -9,3 +10,8 @@ class Medicine(db.Model):
 
     def __repr__(self):
         return f'<Medicine {self.name}>'
+
+class Alert(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    message = db.Column(db.String(255), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
