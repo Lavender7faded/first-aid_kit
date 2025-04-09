@@ -1,6 +1,6 @@
 from flask import flash, render_template, request, redirect, url_for, Response, jsonify
 from app import app, db
-from app.models import Medicine
+from app.models import Medicine, Alert
 from datetime import datetime
 from app.utils.validation import validate_medicine_data
 import json
@@ -88,6 +88,11 @@ def alerts_ui():
         expiring_soon=expiring_soon,
         low_quantity=low_quantity
     )
+
+@app.route('/alerts/history')
+def alert_history():
+    alerts = Alert.query.order_by(Alert.timestamp.desc()).all()
+    return render_template('alert_history.html', alerts=alerts)
 
 # 📌 1. Отримати всі ліки
 @app.route('/medicines', methods=['GET'])
